@@ -37,7 +37,7 @@ class NotesController {
     }
 
 
-    async show (requeste, response){
+    async show(requeste, response){
 
         const { id } = requeste.params;
 
@@ -50,6 +50,50 @@ class NotesController {
             tags,
             links
         })
+    }
+
+
+    async delete(requeste, response){
+
+        const { id } = requeste.params;
+
+        await knex("notes").where({ id }).delete();
+
+        return response.json();
+    }
+
+
+    async index(requeste, response){
+
+        const { title, user_id, tags } = requeste.query;
+
+        let notes;
+
+        if(tags){
+
+            const filterTags = tags.split(',').map(tag => tag.trim());
+            
+            notes = await knex("tags")
+            .select([
+                "notes.id",
+                "notes.title",
+                "notes.user_id"
+            ])
+            .where("notes.user_id", user_id)
+            .whereLike("notes.title", `%${title}%`)
+            .whereIn("name", filterTags)
+            .innerJoin("notes", "notes.id", "tags.notes_id")
+            .orderBy("notes.title")
+
+        } else {
+
+        notes = await knex("notes")
+        .where({ user_id })
+        .whereLike("title", `%${title}%`)
+        .orderBy("title");
+        }
+
+        return response.json(notes)
     }
 }
 
