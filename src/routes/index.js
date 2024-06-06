@@ -6,7 +6,7 @@ const tagsRouter = require("./tags.routes");
 const sessionRoutes = require("./sessions.routes");
 
 const routes = Router();
-
+// arquivos na 'tabela'
 routes.use("/users", usersRoutes);
 routes.use("/notes", notesRouter);
 routes.use("/tags", tagsRouter);
